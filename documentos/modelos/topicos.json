@@ -1,0 +1,32 @@
+{
+  "titulo": "Resumo Compendio sobre AVE",
+  "subtitulo": "Estrutura base para geracao de documento academico",
+  "arquivo_fonte": "documentos/introducao/AVE/ave_summary.md",
+  "arquivo_referencias": "documentos/referencias/referencias.md",
+  "topicos": [
+    {
+      "id": "dados_globais_brasil",
+      "titulo": "Dados globais e no Brasil"
+    },
+    {
+      "id": "consequencias",
+      "titulo": "Consequencias"
+    },
+    {
+      "id": "recuperacao_reabilitacao",
+      "titulo": "Recuperacao e reabilitacao"
+    },
+    {
+      "id": "ferramentas_ia",
+      "titulo": "Ferramentas e uso de IA"
+    },
+    {
+      "id": "sintese_final",
+      "titulo": "Sintese final"
+    },
+    {
+      "id": "referencias",
+      "titulo": "Referencias"
+    }
+  ]
+}

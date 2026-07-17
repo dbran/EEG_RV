@@ -1,0 +1,12 @@
+{
+  "titulo": "Resumo Compendio sobre AVE",
+  "subtitulo": "Exemplo de estrutura para documento academico gerado a partir de Markdown",
+  "topicos": [
+    "Dados globais e no Brasil",
+    "Consequencias",
+    "Recuperacao e reabilitacao",
+    "Ferramentas e uso de IA",
+    "Sintese final",
+    "Referencias"
+  ]
+}

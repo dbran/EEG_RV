@@ -1,0 +1,16 @@
+Hipóteses Consolidadas do Projeto de Integração entre EEG e Realidade Virtual
+
+Hipótese Principal
+H1: Postula-se que seja possível desenvolver uma camada de comunicação em tempo real, baseada em Lab Streaming Layer (LSL), capaz de integrar, de modo síncrono, estável e confiável, um sistema de aquisição e classificação de sinais EEG a uma engine de Realidade Virtual (Unity), viabilizando o acionamento de uma mão virtual com latência fim a fim compatível com os requisitos de interação imersiva e com a percepção de sincronia sensório-motora.
+
+Hipóteses Secundárias
+H2: Pressupõe-se que a decodificação de comandos motores a partir do paradigma de imagética motora, quando integrada a um ambiente de Realidade Virtual, possibilite o controle confiável da animação de uma mão virtual, com desempenho passível de avaliação por métricas como acurácia, coeficiente Kappa e taxa de transferência de informação.
+
+H3: Assume-se que o feedback visual imersivo proporcionado pela Realidade Virtual promova aumento do engajamento do usuário, da sensação de presença e da percepção de agência corporal, em comparação com interfaces não imersivas ou com formas convencionais de feedback bidimensional.
+
+H4: Admite-se que o emprego de feedback multissensorial, em especial visual e háptico, favoreça a modulação dos ritmos sensório-motores, particularmente nas bandas mu e beta, contribuindo para melhor desempenho neurofisiológico durante a execução de tarefas de imagética motora.
+
+H5: Considera-se que uma arquitetura baseada em LSL, eventualmente complementada por sockets quando necessário, apresente maior flexibilidade, estabilidade e potencial de reutilização em aplicações clínicas e experimentais de interfaces cérebro-computador, quando comparada a soluções ad hoc baseadas em emulação de teclado ou mouse.
+
+Síntese
+A hipótese central deste projeto reside na viabilidade técnica de uma ponte de comunicação em tempo real entre a aquisição e classificação de sinais EEG e a interação em Realidade Virtual. As hipóteses secundárias desdobram essa proposição ao contemplar o desempenho do controle motor decodificado, os efeitos do feedback imersivo sobre a experiência do usuário, a resposta neurofisiológica associada à tarefa e o potencial de reaproveitamento da arquitetura em outros contextos de interfaces cérebro-computador.

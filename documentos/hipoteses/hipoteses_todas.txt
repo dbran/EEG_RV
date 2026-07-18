@@ -1,0 +1,35 @@
+Hipoteses
+2. Hipóteses
+H1: A integração em tempo real entre um classificador de EEG (baseado em imagética motora) e uma engine de RV via LSL resultará em uma latência fim-a-fim inferior a 300 ms, considerada aceitável para a percepção de sincronia sensório-motora.
+H2: O feedback visual imersivo em RV, acionado diretamente pela decodificação do padrão motor do usuário, aumentará a ativação dos ritmos sensório-motores (mu e beta) em comparação com a ausência de feedback ou feedback não imersivo.
+Hipótese Principal (H1)
+A integração em tempo real entre um sistema de classificação de EEG e uma aplicação de Realidade Virtual por meio de uma camada de comunicação baseada em LSL e sockets permitirá o controle confiável de uma mão virtual com latência inferior a 200 ms.
+Hipóteses Secundárias
+H2: Usuários serão capazes de controlar a mão virtual utilizando imagética motora com acurácia superior a 70%.
+H3: O ambiente imersivo promoverá maior engajamento quando comparado a sistemas BCI apresentados em telas convencionais.
+H4: A arquitetura desenvolvida poderá ser reutilizada em diferentes aplicações clínicas e de pesquisa envolvendo BCIs.
+
+H1: A integração em tempo real entre um classificador de EEG (baseado em imagética motora) e uma engine de RV via LSL resultará em uma latência fim-a-fim inferior a 300 ms, considerada aceitável para a percepção de sincronia sensório-motora.
+H2: O feedback visual imersivo em RV, acionado diretamente pela decodificação do padrão motor do usuário, aumentará a ativação dos ritmos sensório-motores (mu e beta) em comparação com a ausência de feedback ou feedback não imersivo.
+A utilização do protocolo Lab Streaming Layer (LSL) permitirá uma sincronização de dados entre o sistema de EEG e a engine de RV com latência inferior a 350 ms, garantindo a sensação de presença e agência do usuário [
+O uso de feedbacks multissensoriais (visuais e hápticos) integrados à animação da mão virtual resultará em um aumento significativo na densidade de potência espectral nas bandas alfa e beta (ERD/ERS) em comparação com o treinamento não imersivo 
+A comunicação em tempo real entre o sistema de EEG e a engine de RV é tecnicamente viável com latência compatível com interação imersiva.
+
+O comando motor decodificado a partir do EEG pode acionar de forma confiável a animação de uma mão virtual.
+
+Uma arquitetura baseada em Lab Streaming Layer ou sockets melhora a integração entre aquisição/classificação e RV em comparação com fluxos desacoplados.
+
+Com base na literatura e nos desafios identificados, o presente projeto orienta-se pelas seguintes hipóteses:
+
+H1: É possível desenvolver uma camada de comunicação em tempo real, baseada em Lab Streaming Layer (LSL), que integre de forma síncrona e confiável um sistema de aquisição/classificação de sinais EEG a uma engine de RV (Unity), com latência inferior a 100 ms.
+
+H2: A decodificação de comandos motores a partir de sinais EEG utilizando o paradigma de imaginação motora, quando integrada a um ambiente de RV, permite o acionamento direto e intuitivo da animação de uma mão virtual, com taxa de acerto superior a 70% em indivíduos saudáveis.
+
+H3: O feedback visual imersivo proporcionado pela RV melhora o desempenho da classificação de imaginação motora em comparação com interfaces não imersivas, devido ao aumento do engajamento e da sensação de presença do usuário.
+H1: A integração em tempo real entre um classificador de EEG (baseado em imagética motora) e uma engine de RV via LSL resultará em uma latência fim-a-fim inferior a 300 ms, considerada aceitável para a percepção de sincronia sensório-motora.
+H2: O feedback visual imersivo em RV, acionado diretamente pela decodificação do padrão motor do usuário, aumentará a ativação dos ritmos sensório-motores (mu e beta) em comparação com a ausência de feedback ou feedback não imersivo.
+A partir do problema de pesquisa delineado, formulam-se as seguintes hipóteses de trabalho:
+1.	H1 — É possível desenvolver uma camada de comunicação em tempo real entre um sistema de classificação de EEG baseado em imagética motora e uma engine de RV, utilizando protocolos abertos de streaming (Lab Streaming Layer) ou comunicação via sockets, com latência total (aquisição–classificação–atuação) compatível com a percepção de sincronia sensório-motora relatada na literatura (tipicamente inferior a 300 ms).
+2.	H2 — A arquitetura proposta, baseada em LSL/sockets, apresenta desempenho de latência e robustez de comunicação superiores a soluções ad hoc baseadas em emulação de teclado/mouse, sem prejuízo da acurácia de classificação do comando motor.
+3.	H3 — O acionamento da animação da mão virtual diretamente pelo comando motor decodificado (em vez de por feedback 2D convencional) proporciona maior sensação subjetiva de agência corporal (embodiment) e de presença no ambiente virtual, quando avaliada por instrumentos padronizados.
+4.	H4 — A qualidade da integração em tempo real (latência e estabilidade da comunicação) está associada ao desempenho do usuário na tarefa de ICC, mensurado por métricas como acurácia, coeficiente Kappa e taxa de transferência de informação (ITR).

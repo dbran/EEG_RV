@@ -20,10 +20,11 @@ O que ja foi feito:
 
 ## Ordem recomendada de leitura
 
-1. [contrato_dados_cnn_unity.md](file:///Users/denisemunchen/Documents/EEG_RV/documentos/EEG_VR/contrato_dados_cnn_unity.md)
-2. [Unity_step_by_step.md](file:///Users/denisemunchen/Documents/EEG_RV/documentos/EEG_VR/Unity_step_by_step.md)
-3. [BCIUDPReceiver.cs](file:///Users/denisemunchen/Documents/EEG_RV/documentos/EEG_VR/BCIUDPReceiver.cs)
-4. [bci_jsonl_to_unity_commands.py](file:///Users/denisemunchen/Documents/EEG_RV/python/bci_jsonl_to_unity_commands.py)
+1. [metodo_implementado_dissertacao.docx](file:///Users/denisemunchen/Documents/EEG_RV/documentos/EEG_VR/metodo_implementado_dissertacao.docx)
+2. [contrato_dados_cnn_unity.md](file:///Users/denisemunchen/Documents/EEG_RV/documentos/EEG_VR/contrato_dados_cnn_unity.md)
+3. [Unity_step_by_step.md](file:///Users/denisemunchen/Documents/EEG_RV/documentos/EEG_VR/Unity_step_by_step.md)
+4. [BCIUDPReceiver.cs](file:///Users/denisemunchen/Documents/EEG_RV/documentos/EEG_VR/BCIUDPReceiver.cs)
+5. [bci_jsonl_to_unity_commands.py](file:///Users/denisemunchen/Documents/EEG_RV/python/bci_jsonl_to_unity_commands.py)
 
 ## Arquivos-chave
 
@@ -114,3 +115,13 @@ Isso significa que:
 - a comunicacao UDP funciona;
 - a Unity recebe e aplica os comandos;
 - a mao 3D ja responde aos comandos no lugar do cubo de teste.
+
+## Versao para dissertacao
+
+- [metodo_implementado_dissertacao.docx](file:///Users/denisemunchen/Documents/EEG_RV/documentos/EEG_VR/metodo_implementado_dissertacao.docx)
+
+Arquivo formatado em estilo academico para uso em texto de dissertacao, com:
+
+- fonte `Times New Roman`;
+- tamanho `12`;
+- espacamento `1.5`.

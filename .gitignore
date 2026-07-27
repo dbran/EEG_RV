@@ -5,3 +5,14 @@ __pycache__/
 ~$*
 external/
 fontes/
+
+# Artefatos locais e gerados
+.codex_work/
+outputs/
+Referencias_PDFs/
+python.zip
+table-*.csv
+python/teste.txt
+
+# Documentos de trabalho gerados localmente na raiz
+/*.docx

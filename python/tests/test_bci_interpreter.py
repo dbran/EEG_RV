@@ -1,14 +1,18 @@
 from __future__ import annotations
 
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 from typing import Any
 
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 from bci_jsonl_to_unity_commands import iter_jsonl, normalize_command
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
 REAL_JSONL = PROJECT_ROOT / "bci_stream_example.jsonl"
 
 

@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import socket
 import sys
 import time
+from collections.abc import Iterator
 from pathlib import Path
 from typing import Any
 
@@ -12,64 +14,209 @@ from typing import Any
 DEFAULT_INPUT_PATH = Path(__file__).with_name("bci_stream_example.jsonl")
 
 
-COMMAND_MAP = {
-    "SEM MOVIMENTO": "no_move",
-    "ESQUERDA": "left",
-    "DIREITA": "right",
+LABEL_TEXT_BY_ID = {
+    0: "SEM MOVIMENTO",
+    1: "ESQUERDA",
+    2: "DIREITA",
+}
+
+COMMAND_BY_LABEL = {
+    0: "no_move",
+    1: "left",
+    2: "right",
 }
 
 
-def normalize_command(event: dict[str, Any]) -> dict[str, Any] | None:
-    if event.get("type") != "inference":
-        return None
-
-    if event.get("rejected") is True:
-        return None
-
-    label_text = str(event.get("label_text", "")).strip().upper()
-    if not label_text:
-        return None
-
-    command = COMMAND_MAP.get(label_text, "no_move")
-    is_mi = bool(event.get("is_mi", False))
-    p_move = float(event.get("p_move", 0.0))
-    tau = float(event.get("tau", 0.0))
-
-    # Para comandos ativos, exigimos imagetica motora detectada.
-    if command in {"left", "right"} and not is_mi:
-        command = "no_move"
-
-    # Se o movimento nao passa do limiar, mantemos o estado neutro.
-    if command in {"left", "right"} and p_move <= tau:
-        command = "no_move"
-
+def build_message(
+    event: dict[str, Any],
+    *,
+    command: str,
+    status: str,
+    reason: str = "",
+) -> dict[str, Any]:
+    raw_label_text = event.get("label_text")
+    source_label_text = (
+        raw_label_text.strip().upper()
+        if isinstance(raw_label_text, str)
+        else raw_label_text
+    )
     return {
         "command": command,
+        "status": status,
+        "reason": reason,
         "source_label": event.get("label"),
-        "source_label_text": label_text,
-        "is_mi": is_mi,
-        "p_move": p_move,
-        "tau": tau,
+        "source_label_text": source_label_text,
+        "is_mi": event.get("is_mi"),
+        "p_move": event.get("p_move"),
+        "tau": event.get("tau"),
         "group_id": event.get("group_id"),
         "timestamp": time.time(),
     }
 
 
-def iter_jsonl(path: Path) -> list[dict[str, Any]]:
-    events: list[dict[str, Any]] = []
+def invalid_message(event: dict[str, Any], reason: str) -> dict[str, Any]:
+    return build_message(
+        event,
+        command="no_move",
+        status="invalid",
+        reason=reason,
+    )
+
+
+def is_finite_number(value: Any) -> bool:
+    return (
+        isinstance(value, (int, float))
+        and not isinstance(value, bool)
+        and math.isfinite(value)
+    )
+
+
+def validate_optional_fields(event: dict[str, Any]) -> str | None:
+    if "is_mi" in event and type(event["is_mi"]) is not bool:
+        return "invalid_type:is_mi"
+
+    for field in ("p_move", "tau"):
+        if field in event and not is_finite_number(event[field]):
+            return f"invalid_type:{field}"
+
+    for field in ("raw_pred", "consecutive_rejected", "group_id"):
+        if field in event and type(event[field]) is not int:
+            return f"invalid_type:{field}"
+
+    for field in ("p_combined", "ema"):
+        if field not in event:
+            continue
+        values = event[field]
+        if (
+            not isinstance(values, list)
+            or len(values) != 3
+            or not all(is_finite_number(value) for value in values)
+        ):
+            return f"invalid_type:{field}"
+
+    if "reason" in event and not isinstance(event["reason"], str):
+        return "invalid_type:reason"
+
+    return None
+
+
+def normalize_command(event: dict[str, Any]) -> dict[str, Any] | None:
+    if not isinstance(event, dict):
+        return invalid_message({}, "invalid_type:event")
+
+    if "type" not in event:
+        return invalid_message(event, "missing_field:type")
+
+    event_type_value = event["type"]
+    if not isinstance(event_type_value, str):
+        return invalid_message(event, "invalid_type:type")
+
+    event_type = event_type_value.strip().lower()
+
+    if event_type in {"started", "threshold"}:
+        return None
+
+    if event_type == "error":
+        reason = event.get("message", event.get("reason", "classifier_error"))
+        if not isinstance(reason, str):
+            return invalid_message(event, "invalid_type:message")
+        return build_message(
+            event,
+            command="no_move",
+            status="error",
+            reason=reason.strip() or "classifier_error",
+        )
+
+    if event_type == "invalid":
+        reason = event.get("reason", "invalid_event")
+        if not isinstance(reason, str):
+            reason = "invalid_event"
+        return invalid_message(event, reason)
+
+    if event_type != "inference":
+        return invalid_message(event, f"unknown_event_type:{event_type}")
+
+    if "rejected" not in event:
+        return invalid_message(event, "missing_field:rejected")
+
+    if type(event["rejected"]) is not bool:
+        return invalid_message(event, "invalid_type:rejected")
+
+    if event["rejected"]:
+        reason = event.get("reason", "inference_rejected")
+        if not isinstance(reason, str):
+            return invalid_message(event, "invalid_type:reason")
+        return build_message(
+            event,
+            command="no_move",
+            status="rejected",
+            reason=reason.strip() or "inference_rejected",
+        )
+
+    for field in ("label", "label_text"):
+        if field not in event:
+            return invalid_message(event, f"missing_field:{field}")
+
+    label = event["label"]
+    if type(label) is not int:
+        return invalid_message(event, "invalid_type:label")
+
+    raw_label_text = event["label_text"]
+    if not isinstance(raw_label_text, str):
+        return invalid_message(event, "invalid_type:label_text")
+
+    label_text = raw_label_text.strip().upper()
+    if not label_text:
+        return invalid_message(event, "empty_field:label_text")
+
+    expected_label_text = LABEL_TEXT_BY_ID.get(label)
+    if expected_label_text is None:
+        return invalid_message(
+            event,
+            f"unknown_class:label={label}:label_text={label_text}",
+        )
+
+    if label_text != expected_label_text:
+        return invalid_message(
+            event,
+            "label_label_text_mismatch:"
+            f"label={label}:expected={expected_label_text}:received={label_text}",
+        )
+
+    validation_error = validate_optional_fields(event)
+    if validation_error is not None:
+        return invalid_message(event, validation_error)
+
+    return build_message(
+        event,
+        command=COMMAND_BY_LABEL[label],
+        status="accepted",
+    )
+
+
+def iter_jsonl(path: Path) -> Iterator[dict[str, Any]]:
     with path.open("r", encoding="utf-8") as handle:
         for line_number, line in enumerate(handle, start=1):
             line = line.strip()
             if not line:
                 continue
             try:
-                events.append(json.loads(line))
+                event = json.loads(line)
             except json.JSONDecodeError as exc:
-                print(
-                    f"Linha {line_number} ignorada por JSON invalido: {exc}",
-                    file=sys.stderr,
-                )
-    return events
+                yield {
+                    "type": "invalid",
+                    "reason": f"invalid_json:line={line_number}:{exc.msg}",
+                }
+                continue
+
+            if not isinstance(event, dict):
+                yield {
+                    "type": "invalid",
+                    "reason": f"invalid_json_root:line={line_number}",
+                }
+                continue
+
+            yield event
 
 
 def emit_stdout(message: dict[str, Any]) -> None:
@@ -79,6 +226,22 @@ def emit_stdout(message: dict[str, Any]) -> None:
 def emit_udp(message: dict[str, Any], sock: socket.socket, host: str, port: int) -> None:
     payload = json.dumps(message, ensure_ascii=False).encode("utf-8")
     sock.sendto(payload, (host, port))
+
+
+def log_nonaccepted(message: dict[str, Any]) -> None:
+    if message["status"] == "accepted":
+        return
+
+    log_entry = {
+        "level": "error" if message["status"] == "error" else "warning",
+        "status": message["status"],
+        "reason": message["reason"],
+        "command": message["command"],
+        "source_label": message["source_label"],
+        "source_label_text": message["source_label_text"],
+        "timestamp": message["timestamp"],
+    }
+    print(json.dumps(log_entry, ensure_ascii=False), file=sys.stderr, flush=True)
 
 
 def parse_args() -> argparse.Namespace:
@@ -133,6 +296,8 @@ def main() -> int:
         message = normalize_command(event)
         if message is None:
             continue
+
+        log_nonaccepted(message)
 
         if args.dedupe and message["command"] == last_command:
             continue

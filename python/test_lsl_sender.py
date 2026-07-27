@@ -22,7 +22,7 @@ def main() -> None:
 
     start_time = time.time()
     sample_interval = 0.01
-
+    # 100 Hz - 100 samples per second
     try:
         while True:
             t = time.time() - start_time

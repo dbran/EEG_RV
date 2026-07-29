@@ -401,6 +401,7 @@ Com a Unity em `Play` e o comando Python rodando:
 3. o `Console` da Unity deve exibir logs do tipo:
    - `BCIUDPReceiver ouvindo na porta 5005`
    - `Pacote UDP recebido: {...}`
+   - `Pacote UDP invalido; aplicado no_move: {...}` para entradas invalidas
 
 Sequencia esperada com o arquivo de exemplo em modo `--dedupe`:
 
@@ -413,6 +414,13 @@ Observacao importante:
 
 - se todos os pacotes chegarem praticamente ao mesmo tempo, o movimento pode parecer nao acontecer ou apenas o ultimo comando ficar visivel;
 - por isso, esta versao usa uma fila no `BCIUDPReceiver` e tambem aceita um atraso opcional no script Python.
+
+Regra de seguranca:
+
+- somente `left`, `right` e `no_move` sao aceitos;
+- JSON malformado, comando ausente ou comando desconhecido gera `no_move`;
+- mensagens com `status` diferente de `accepted` tambem geram `no_move`;
+- o `BCIDebugController` repete essa validacao antes de mover a mao.
 
 ## 18.1. Observacao importante sobre foco da Unity
 

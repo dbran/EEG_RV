@@ -11,6 +11,8 @@ using UnityEngine;
 public class BCICommandMessage
 {
     public string command;
+    public string status;
+    public string reason;
     public int source_label;
     public string source_label_text;
     public bool is_mi;
@@ -121,22 +123,25 @@ public class BCIUDPReceiver : MonoBehaviour
             {
                 byte[] payload = udpClient.Receive(ref remoteEndPoint);
                 string json = Encoding.UTF8.GetString(payload);
-                BCICommandMessage message = JsonUtility.FromJson<BCICommandMessage>(json);
-
-                if (message == null || string.IsNullOrWhiteSpace(message.command))
-                {
-                    continue;
-                }
-
-                string normalizedCommand = message.command.Trim().ToLowerInvariant();
+                bool isValid;
+                string normalizedCommand = ParseCommandOrNoMove(json, out isValid);
 
                 lock (syncRoot)
                 {
                     pendingCommands.Enqueue(normalizedCommand);
-                    latestStatus = $"UDP conectado | ultimo comando: {normalizedCommand}";
+                    latestStatus = isValid
+                        ? $"UDP conectado | ultimo comando: {normalizedCommand}"
+                        : "UDP conectado | mensagem invalida -> no_move";
                 }
 
-                Debug.Log($"Pacote UDP recebido: {json}");
+                if (isValid)
+                {
+                    Debug.Log($"Pacote UDP recebido: {json}");
+                }
+                else
+                {
+                    Debug.LogWarning($"Pacote UDP invalido; aplicado no_move: {json}");
+                }
             }
             catch (SocketException)
             {
@@ -159,6 +164,39 @@ public class BCIUDPReceiver : MonoBehaviour
 
                 Debug.LogError($"Erro ao processar pacote UDP: {ex.Message}");
             }
+        }
+    }
+
+    private string ParseCommandOrNoMove(string json, out bool isValid)
+    {
+        isValid = false;
+
+        try
+        {
+            BCICommandMessage message = JsonUtility.FromJson<BCICommandMessage>(json);
+            if (message == null || string.IsNullOrWhiteSpace(message.command))
+            {
+                return "no_move";
+            }
+
+            string command = message.command.Trim().ToLowerInvariant();
+            if (command != "left" && command != "right" && command != "no_move")
+            {
+                return "no_move";
+            }
+
+            if (!string.IsNullOrWhiteSpace(message.status)
+                && message.status.Trim().ToLowerInvariant() != "accepted")
+            {
+                return "no_move";
+            }
+
+            isValid = true;
+            return command;
+        }
+        catch (Exception)
+        {
+            return "no_move";
         }
     }
 

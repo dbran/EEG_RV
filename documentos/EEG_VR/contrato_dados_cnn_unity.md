@@ -122,23 +122,43 @@ Se surgir qualquer outro valor, a saida deve cair para:
 {"command":"no_move"}
 ```
 
+## Transporte confirmado para a Unity
+
+A ponte atual envia cada comando em um datagrama UDP independente:
+
+- protocolo: UDP sobre IPv4;
+- endereco no mesmo Mac: `127.0.0.1`;
+- porta padrao: `5005`;
+- codificacao: JSON em UTF-8;
+- unidade de mensagem: um objeto JSON completo por datagrama.
+
+Se a Unity estiver em outro equipamento, substituir `127.0.0.1` pelo endereco
+IPv4 do equipamento que executa a Unity e manter a mesma porta nos dois lados.
+
 ## Formato de saida para a Unity
 
 A Unity nao precisa receber o EEG bruto. Ela deve receber apenas um comando motor simplificado.
 
-Formato minimo sugerido:
+Formato emitido pela ponte:
 
 ```json
 {
   "command": "left",
+  "status": "accepted",
+  "reason": "",
   "source_label": 1,
   "source_label_text": "ESQUERDA",
   "is_mi": true,
   "p_move": 0.831,
   "tau": 0.45,
-  "group_id": 0
+  "group_id": 0,
+  "timestamp": 0.0
 }
 ```
+
+Os valores aceitos para `command` sao somente `left`, `right` e `no_move`.
+JSON malformado, comando ausente, comando desconhecido ou `status` diferente de
+`accepted` deve resultar em `no_move` na Unity.
 
 ## Regras de traducao
 

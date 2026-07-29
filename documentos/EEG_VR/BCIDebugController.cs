@@ -45,13 +45,25 @@ public class BCIDebugController : MonoBehaviour
 
     public void ApplyCommand(string command)
     {
-        Debug.Log("ApplyCommand recebeu: " + command);
-        currentCommand = command;
+        string normalizedCommand = string.IsNullOrWhiteSpace(command)
+            ? "no_move"
+            : command.Trim().ToLowerInvariant();
+
+        if (normalizedCommand != "left"
+            && normalizedCommand != "right"
+            && normalizedCommand != "no_move")
+        {
+            Debug.LogWarning("Comando invalido; aplicado no_move: " + command);
+            normalizedCommand = "no_move";
+        }
+
+        Debug.Log("ApplyCommand recebeu: " + normalizedCommand);
+        currentCommand = normalizedCommand;
         commandText.text = "Comando atual: " + currentCommand;
 
-        if (command == "left")
+        if (currentCommand == "left")
             handProxy.transform.position = startPos + new Vector3(-1.5f, 0f, 0f);
-        else if (command == "right")
+        else if (currentCommand == "right")
             handProxy.transform.position = startPos + new Vector3(1.5f, 0f, 0f);
         else
             handProxy.transform.position = startPos;
